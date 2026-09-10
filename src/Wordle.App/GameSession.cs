@@ -8,7 +8,7 @@ public class GameSession
     private string CorrectAnswer { get; set; }
     public List<string> UserAnswerHistory { get; private set; }
 
-    public GameSession(int maxAttempts, int seed)
+    public GameSession(int maxAttempts, string correctAnswer)
     {
         if (maxAttempts <= 0)
         {
@@ -19,7 +19,7 @@ public class GameSession
         Status = GameStatus.InProgress;
         UsedAttempts = 0;
         UserAnswerHistory = new List<string>();
-        CorrectAnswer = ChooseWord.Choose(seed);
+        CorrectAnswer = correctAnswer;
     }
 
     public void MakeGuess(string guess)

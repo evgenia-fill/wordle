@@ -2,11 +2,9 @@ namespace Wordle.App;
 
 public static class ChooseWord
 {
-    private static readonly List<string> Words = ReadDictionary.Read();
-
-    public static string Choose(int seed)
+    public static string Choose(int seed, List<string> dictionary)
     {
         var random = new Random(seed);
-        return Words[random.Next(Words.Count)];
+        return dictionary[random.Next(dictionary.Count)];
     }
 }
