@@ -6,7 +6,7 @@ public static class ReadDictionary
     {
         var path = Path.Combine(AppContext.BaseDirectory, "dictionary.txt");
         var words = File.ReadAllLines(path);
-        return words.Where(w => !string.IsNullOrWhiteSpace(w))
+        return words.Where(w => !string.IsNullOrWhiteSpace(w) && w.Length == 5)
             .Select(w => w.ToLower())
             .ToList();
     }
