@@ -6,18 +6,20 @@ namespace Wordle.Tests.Mandatory.Mr1;
 public class DictionaryTest
 {
     private const string FileName = "dictionary.txt";
-    private readonly List<string> _dictionary = GetDictionary.Get(FileName);
+    private const int RequiredWordsLength = 5;
+    private const int RequiredDictionaryLength = 50;
+    private readonly List<string> _dictionary = WordleDictionary.LoadFromFile(FileName);
 
     [Fact(DisplayName = "Словарь содержит не меньше 50 слов")]
     public void DictionaryContainsAtLeastFiftyWords()
     {
-        Assert.True(_dictionary.Count >= 50);
+        Assert.True(_dictionary.Count >= RequiredDictionaryLength);
     }
 
     [Fact(DisplayName = "Все слова словаря состоят ровно из 5 букв")]
     public void AllWordsAreExactlyFiveLettersLong()
     {
-        Assert.All(_dictionary, word => Assert.True(word.Length == 5));
+        Assert.All(_dictionary, word => Assert.True(word.Length == RequiredWordsLength));
     }
 
     [Fact(DisplayName = "Пустой словарь приводит к ошибке, а не к запуску игры без слова")]
@@ -27,7 +29,7 @@ public class DictionaryTest
         File.WriteAllText(emptyFailName, "");
         try
         {
-            Assert.Throws<InvalidOperationException>(() => GetDictionary.Get(emptyFailName));
+            Assert.Throws<InvalidOperationException>(() => WordleDictionary.LoadFromFile(emptyFailName));
         }
         finally
         {

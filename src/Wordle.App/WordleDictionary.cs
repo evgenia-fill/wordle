@@ -1,8 +1,10 @@
 namespace Wordle.App;
 
-public static class GetDictionary
+public static class WordleDictionary
 {
-    public static List<string> Get(string filename)
+    private const int RequiredWordsLength = 5;
+
+    public static List<string> LoadFromFile(string filename)
     {
         return Parse(Read(filename));
     }
@@ -21,7 +23,7 @@ public static class GetDictionary
 
     private static List<string> Parse(IEnumerable<string> lines)
     {
-        var words = lines.Where(l => !string.IsNullOrWhiteSpace(l) && l.Length == 5)
+        var words = lines.Where(l => !string.IsNullOrWhiteSpace(l) && l.Length == RequiredWordsLength)
             .Select(l => l.ToLower())
             .ToList();
 
