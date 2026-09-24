@@ -1,37 +1,43 @@
+using Wordle.App;
+
 namespace Wordle.Tests.Mandatory.Mr2;
 
 /// <summary>Обязательные тесты: раскраска букв.</summary>
 public class LetterMatchingTest
 {
-    [Fact(
-        DisplayName = "Базовый случай: загадано \"озеро\", ввод \"арбуз\" -> ❌🟡❌❌🟡",
-        Skip = "MR2: реализуй тест и удали эту строку")]
+    [Fact(DisplayName = "Базовый случай: загадано \"озеро\", ввод \"арбуз\" -> ❌🟡❌❌🟡")]
     public void BasicCase()
     {
-        Assert.Fail("Тест не реализован");
+        const string correctAnswer = "озеро";
+        const string guess = "арбуз";
+        var expectedAnswer = new[] { LetterStatus.NotContained, LetterStatus.OnWrongPlace, LetterStatus.NotContained, LetterStatus.NotContained, LetterStatus.OnWrongPlace };
+        Assert.Equal(expectedAnswer, GuessChecker.Evaluate(guess, correctAnswer));
     }
 
-    [Fact(
-        DisplayName = "Полное совпадение: загадано \"озеро\", ввод \"озеро\" -> ✅✅✅✅✅",
-        Skip = "MR2: реализуй тест и удали эту строку")]
+    [Fact(DisplayName = "Полное совпадение: загадано \"озеро\", ввод \"озеро\" -> ✅✅✅✅✅")]
     public void ExactMatch()
     {
-        Assert.Fail("Тест не реализован");
+        const string correctAnswer = "озеро";
+        const string guess = "озеро";
+        var expectedAnswer = new[] { LetterStatus.OnCorrectPlace, LetterStatus.OnCorrectPlace, LetterStatus.OnCorrectPlace, LetterStatus.OnCorrectPlace, LetterStatus.OnCorrectPlace };
+        Assert.Equal(expectedAnswer, GuessChecker.Evaluate(guess, correctAnswer));
     }
 
-    [Fact(
-        DisplayName = "Повторяющиеся буквы: загадано \"сорок\", ввод \"оооом\" -> 🟡❌❌✅❌",
-        Skip = "MR2: реализуй тест и удали эту строку")]
+    [Fact(DisplayName = "Повторяющиеся буквы: загадано \"сорок\", ввод \"оооом\" -> ❌✅❌✅❌")]
     public void RepeatedLettersAreNotDoubleCounted()
     {
-        Assert.Fail("Тест не реализован");
+        const string correctAnswer = "сорок";
+        const string guess = "оооом";
+        var expectedAnswer = new[] { LetterStatus.NotContained, LetterStatus.OnCorrectPlace, LetterStatus.NotContained, LetterStatus.OnCorrectPlace, LetterStatus.NotContained };
+        Assert.Equal(expectedAnswer, GuessChecker.Evaluate(guess, correctAnswer));
     }
 
-    [Fact(
-        DisplayName = "Ни одна буква не подошла: все позиции ❌",
-        Skip = "MR2: реализуй тест и удали эту строку")]
+    [Fact(DisplayName = "Ни одна буква не подошла: все позиции ❌")]
     public void NoMatchingLetters()
     {
-        Assert.Fail("Тест не реализован");
+        const string correctAnswer = "сорок";
+        const string guess = "ййййй";
+        var expectedAnswer = new[] { LetterStatus.NotContained, LetterStatus.OnCorrectPlace, LetterStatus.NotContained, LetterStatus.OnCorrectPlace, LetterStatus.NotContained };
+        Assert.Equal(expectedAnswer, GuessChecker.Evaluate(guess, correctAnswer));
     }
 }
