@@ -2,40 +2,40 @@ namespace Wordle.App;
 
 public class GameSession
 {
-    public int MaxAttempts { get; private set; }
+    public readonly int MaxAttempts;
+    public readonly string CorrectAnswer;
     public int UsedAttempts { get; private set; }
     public GameStatus Status { get; private set; }
-    private string CorrectAnswer { get; set; }
-    public List<string> UserAnswerHistory { get; private set; }
+    public IReadOnlyList<string> UserAnswerHistory => _userAnswerHistory;
+    private readonly List<string> _userAnswerHistory = new();
 
     public GameSession(int maxAttempts, string correctAnswer)
     {
         if (maxAttempts <= 0)
         {
-            throw new ArgumentOutOfRangeException("MaxAttempts must be greater than zero", nameof(maxAttempts));
+            throw new ArgumentOutOfRangeException(
+                nameof(maxAttempts),
+                maxAttempts,
+                "MaxAttempts must be greater than zero");
+        }
+
+        if (string.IsNullOrEmpty(correctAnswer))
+        {
+            throw new ArgumentException(
+                "Correct answer cannot be empty",
+                nameof(correctAnswer));
         }
 
         MaxAttempts = maxAttempts;
         Status = GameStatus.InProgress;
         UsedAttempts = 0;
-        UserAnswerHistory = new List<string>();
         CorrectAnswer = correctAnswer;
     }
 
-    public void MakeGuess(string guess)
+    public void ApplyValidGuess(string guess)
     {
-        if (Status != GameStatus.InProgress)
-        {
-            throw new Exception("Game is finished");
-        }
-
-        if (guess.Length != GameRules.RequiredWordsLength)
-        {
-            throw new ArgumentException("Word must be 5 characters length", nameof(guess.Length));
-        }
-
         UsedAttempts++;
-        UserAnswerHistory.Add(guess);
+        _userAnswerHistory.Add(guess);
 
         if (guess == CorrectAnswer)
         {
@@ -46,7 +46,6 @@ public class GameSession
         if (UsedAttempts == MaxAttempts)
         {
             Status = GameStatus.Lose;
-            return;
         }
     }
 }
