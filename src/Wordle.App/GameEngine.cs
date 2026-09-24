@@ -2,9 +2,9 @@ namespace Wordle.App;
 
 public class GameEngine
 {
-    private readonly List<string> _dictionary;
+    private readonly IReadOnlyList<string> _dictionary;
 
-    public GameEngine(List<string> dictionary)
+    public GameEngine(IReadOnlyList<string> dictionary)
     {
         _dictionary = dictionary;
     }

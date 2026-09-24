@@ -5,7 +5,7 @@ namespace Wordle.Tests.Mandatory.Mr1;
 /// <summary>Обязательные тесты: одинаковый seed обязан давать одинаковое загаданное слово.</summary>
 public class SeedTest
 {
-    private readonly List<string> _dictionary = WordleDictionary.LoadFromFile("dictionary.txt");
+    private readonly IReadOnlyList<string> _dictionary = WordleDictionary.LoadFromFile("dictionary.txt");
 
     [Fact(DisplayName = "Одинаковый seed даёт одинаковое загаданное слово")]
     public void SameSeedProducesSameAnswer()

@@ -7,7 +7,7 @@ public class DictionaryTest
 {
     private const string FileName = "dictionary.txt";
     private const int RequiredDictionaryLength = 50;
-    private readonly List<string> _dictionary = WordleDictionary.LoadFromFile(FileName);
+    private readonly IReadOnlyList<string> _dictionary = WordleDictionary.LoadFromFile(FileName);
 
     [Fact(DisplayName = "Словарь содержит не меньше 50 слов")]
     public void DictionaryContainsAtLeastFiftyWords()
