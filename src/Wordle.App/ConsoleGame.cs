@@ -2,14 +2,21 @@ namespace Wordle.App;
 
 public class ConsoleGame
 {
-    public void Play(GameSession session, GameEngine engine)
+    private readonly GameEngine _engine;
+
+    public ConsoleGame(GameEngine engine)
+    {
+        _engine = engine;
+    }
+
+    public void Play(GameSession session)
     {
         while (session.Status == GameStatus.InProgress)
         {
             Console.Write("Ваша попытка: ");
             var guess = Console.ReadLine();
 
-            var guessResult = engine.ApplyGuess(session, guess);
+            var guessResult = _engine.ApplyGuess(session, guess);
 
             switch (guessResult.Type)
             {
@@ -46,7 +53,7 @@ public class ConsoleGame
         }
     }
 
-    private void ShowResult(IReadOnlyList<LetterStatus> statuses)
+    private static void ShowResult(IReadOnlyList<LetterStatus> statuses)
     {
         if (statuses == null)
         {
