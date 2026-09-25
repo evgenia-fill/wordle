@@ -6,7 +6,6 @@ namespace Wordle.Tests.Mandatory.Mr1;
 public class DictionaryTest
 {
     private const string FileName = "dictionary.txt";
-    private const int RequiredWordsLength = 5;
     private const int RequiredDictionaryLength = 50;
     private readonly List<string> _dictionary = WordleDictionary.LoadFromFile(FileName);
 
@@ -19,7 +18,7 @@ public class DictionaryTest
     [Fact(DisplayName = "Все слова словаря состоят ровно из 5 букв")]
     public void AllWordsAreExactlyFiveLettersLong()
     {
-        Assert.All(_dictionary, word => Assert.True(word.Length == RequiredWordsLength));
+        Assert.All(_dictionary, word => Assert.True(word.Length == GameRules.RequiredWordsLength));
     }
 
     [Fact(DisplayName = "Пустой словарь приводит к ошибке, а не к запуску игры без слова")]

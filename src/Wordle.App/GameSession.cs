@@ -7,7 +7,6 @@ public class GameSession
     public GameStatus Status { get; private set; }
     private string CorrectAnswer { get; set; }
     public List<string> UserAnswerHistory { get; private set; }
-    private const int RequiredWordsLength = 5;
 
     public GameSession(int maxAttempts, string correctAnswer)
     {
@@ -30,7 +29,7 @@ public class GameSession
             throw new Exception("Game is finished");
         }
 
-        if (guess.Length != RequiredWordsLength)
+        if (guess.Length != GameRules.RequiredWordsLength)
         {
             throw new ArgumentException("Word must be 5 characters length", nameof(guess.Length));
         }
