@@ -20,20 +20,19 @@ public class ConsoleGame
 
             switch (guessResult.Type)
             {
-                case GuessResultType.LengthError:
+               case GuessResultType.LengthError:
                     Console.WriteLine($"Слово \"{guess}\" должно быть длиной {GameEngine.RequiredWordLength}!");
                     Console.WriteLine($"Осталось попыток: {session.MaxAttempts - session.UsedAttempts}");
                     break;
+
                 case GuessResultType.NotInDictionaryError:
                     Console.WriteLine($"Слова \"{guess}\" нет в словаре!");
                     Console.WriteLine($"Осталось попыток: {session.MaxAttempts - session.UsedAttempts}");
                     break;
+
                 case GuessResultType.Valid:
-
                     ShowResult(guessResult.LetterStatuses);
-
                     Console.WriteLine($"Осталось попыток: {session.MaxAttempts - session.UsedAttempts}");
-
                     break;
             }
 
@@ -48,12 +47,13 @@ public class ConsoleGame
             if (session.Status == GameStatus.Lose)
             {
                 Console.WriteLine("Поражение!");
+                Console.WriteLine($"Загаданное слово: {session.CorrectAnswer}");
                 break;
             }
         }
     }
 
-    private static void ShowResult(IReadOnlyList<LetterStatus> statuses)
+    private static void ShowResult(IReadOnlyList<LetterStatus>? statuses)
     {
         if (statuses == null)
         {
