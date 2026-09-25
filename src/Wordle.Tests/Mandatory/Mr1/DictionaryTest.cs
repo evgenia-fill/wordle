@@ -1,29 +1,38 @@
+using Wordle.App;
+
 namespace Wordle.Tests.Mandatory.Mr1;
 
 /// <summary>Обязательные тесты: словарь.</summary>
 public class DictionaryTest
 {
-    [Fact(
-        DisplayName = "Словарь содержит не меньше 50 слов",
-        Skip = "MR1: реализуй тест и удали эту строку")]
+    private const string FileName = "dictionary.txt";
+    private const int RequiredDictionaryLength = 50;
+    private readonly List<string> _dictionary = WordleDictionary.LoadFromFile(FileName);
+
+    [Fact(DisplayName = "Словарь содержит не меньше 50 слов")]
     public void DictionaryContainsAtLeastFiftyWords()
     {
-        Assert.Fail("Тест не реализован");
+        Assert.True(_dictionary.Count >= RequiredDictionaryLength);
     }
 
-    [Fact(
-        DisplayName = "Все слова словаря состоят ровно из 5 букв",
-        Skip = "MR1: реализуй тест и удали эту строку")]
+    [Fact(DisplayName = "Все слова словаря состоят ровно из 5 букв")]
     public void AllWordsAreExactlyFiveLettersLong()
     {
-        Assert.Fail("Тест не реализован");
+        Assert.All(_dictionary, word => Assert.True(word.Length == GameRules.RequiredWordsLength));
     }
 
-    [Fact(
-        DisplayName = "Пустой словарь приводит к ошибке, а не к запуску игры без слова",
-        Skip = "MR1: реализуй тест и удали эту строку")]
+    [Fact(DisplayName = "Пустой словарь приводит к ошибке, а не к запуску игры без слова")]
     public void EmptyDictionaryIsRejected()
     {
-        Assert.Fail("Тест не реализован");
+        const string emptyFailName = "empty.txt";
+        File.WriteAllText(emptyFailName, "");
+        try
+        {
+            Assert.Throws<InvalidOperationException>(() => WordleDictionary.LoadFromFile(emptyFailName));
+        }
+        finally
+        {
+            File.Delete(emptyFailName);
+        }
     }
 }
