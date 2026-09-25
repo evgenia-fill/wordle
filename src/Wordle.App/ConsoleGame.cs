@@ -24,6 +24,11 @@ public class ConsoleGame
                     Console.WriteLine($"Слово \"{guess}\" должно быть длиной {GameEngine.RequiredWordLength}!");
                     Console.WriteLine($"Осталось попыток: {session.MaxAttempts - session.UsedAttempts}");
                     break;
+               
+               case GuessResultType.LetterError:
+                   Console.WriteLine($"Слово \"{guess}\" должно состоять только из букв!");
+                   Console.WriteLine($"Осталось попыток: {session.MaxAttempts - session.UsedAttempts}");
+                   break;
 
                 case GuessResultType.NotInDictionaryError:
                     Console.WriteLine($"Слова \"{guess}\" нет в словаре!");

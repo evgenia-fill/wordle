@@ -20,9 +20,14 @@ public class GameEngine
             return new GuessResult(GuessResultType.GameFinishedError);
         }
 
-        if (string.IsNullOrWhiteSpace(guess) || guess.Length != RequiredWordLength || !guess.All(char.IsLetter))
+        if (string.IsNullOrWhiteSpace(guess) || guess.Length != RequiredWordLength)
         {
             return new GuessResult(GuessResultType.LengthError);
+        }
+
+        if (!guess.All(char.IsLetter))
+        {
+            return new GuessResult(GuessResultType.LetterError);
         }
 
         if (!_dictionary.Contains(guess))

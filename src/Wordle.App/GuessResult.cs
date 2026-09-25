@@ -4,6 +4,7 @@ public enum GuessResultType
 {
     Valid,
     LengthError,
+    LetterError,
     NotInDictionaryError,
     GameFinishedError
 }
