@@ -4,7 +4,8 @@ public enum GuessResultType
 {
     Valid,
     LengthError,
-    NotInDictionaryError
+    NotInDictionaryError,
+    GameFinishedError
 }
 
 public class GuessResult

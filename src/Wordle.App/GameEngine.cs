@@ -15,6 +15,11 @@ public class GameEngine
     {
         guess = guess?.ToLower();
 
+        if (session.Status != GameStatus.InProgress)
+        {
+            return new GuessResult(GuessResultType.GameFinishedError);
+        }
+
         if (string.IsNullOrWhiteSpace(guess) || guess.Length != RequiredWordLength || !guess.All(char.IsLetter))
         {
             return new GuessResult(GuessResultType.LengthError);
