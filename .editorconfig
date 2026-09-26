@@ -59,4 +59,6 @@ csharp_preserve_single_line_blocks = true
 # https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/formatting-rules#namespace-options
 csharp_style_namespace_declarations = file_scoped:suggestion
 
+[*.cs]
+dotnet_diagnostic.xUnit1026.severity = none
 
