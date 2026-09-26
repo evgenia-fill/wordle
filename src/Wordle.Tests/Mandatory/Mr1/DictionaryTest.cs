@@ -12,13 +12,13 @@ public class DictionaryTest
     [Fact(DisplayName = "Словарь содержит не меньше 50 слов")]
     public void DictionaryContainsAtLeastFiftyWords()
     {
-        Assert.True(_dictionary.Count >= RequiredDictionaryLength);
+        Assert.True(_dictionary.Count >= GameRules.MinDictionaryLength);
     }
 
     [Fact(DisplayName = "Все слова словаря состоят ровно из 5 букв")]
     public void AllWordsAreExactlyFiveLettersLong()
     {
-        Assert.All(_dictionary, word => Assert.True(word.Length == GameRules.RequiredWordsLength));
+        Assert.All(_dictionary, word => Assert.True(word.Length == GameRules.RequiredWordLength));
     }
 
     [Fact(DisplayName = "Пустой словарь приводит к ошибке, а не к запуску игры без слова")]

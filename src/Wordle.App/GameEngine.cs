@@ -8,9 +8,7 @@ public class GameEngine
     {
         _dictionary = dictionary;
     }
-
-    public const int RequiredWordLength = 5;
-
+    
     public GuessResult ApplyGuess(GameSession session, string? guess)
     {
         guess = guess?.ToLower();
@@ -20,7 +18,7 @@ public class GameEngine
             return new GuessResult(GuessResultType.GameFinishedError);
         }
 
-        if (string.IsNullOrWhiteSpace(guess) || guess.Length != RequiredWordLength)
+        if (string.IsNullOrWhiteSpace(guess) || guess.Length != GameRules.RequiredWordLength)
         {
             return new GuessResult(GuessResultType.LengthError);
         }

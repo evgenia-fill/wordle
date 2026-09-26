@@ -21,7 +21,7 @@ public class ConsoleGame
             switch (guessResult.Type)
             {
                 case GuessResultType.LengthError:
-                    Console.WriteLine($"Слово \"{guess}\" должно быть длиной {GameEngine.RequiredWordLength}!");
+                    Console.WriteLine($"Слово \"{guess}\" должно быть длиной {GameRules.RequiredWordLength}!");
                     Console.WriteLine($"Осталось попыток: {session.MaxAttempts - session.UsedAttempts}");
                     break;
 

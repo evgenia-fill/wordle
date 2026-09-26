@@ -21,7 +21,7 @@ public static class WordleDictionary
 
     private static List<string> Parse(IEnumerable<string> lines)
     {
-        var words = lines.Where(l => !string.IsNullOrWhiteSpace(l) && l.Length == GameRules.RequiredWordsLength)
+        var words = lines.Where(l => !string.IsNullOrWhiteSpace(l) && l.Length == GameRules.RequiredWordLength)
             .Select(l => l.ToLower())
             .ToList();
 
