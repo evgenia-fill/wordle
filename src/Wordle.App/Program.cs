@@ -106,65 +106,41 @@ static ConsoleGameResult StartGame()
 
             case ConsoleGameResult.Quit:
                 return ConsoleGameResult.Quit;
-
-            case ConsoleGameResult.Finished:
-                break;
         }
 
-        while (true)
+        var (isShowHistory, historyCommand) = AskYesNo("Хотите посмотреть свои попытки?");
+        switch (historyCommand)
         {
-            Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("Хотите сыграть ещё раз?");
-            Console.WriteLine("[Д] Да");
-            Console.WriteLine("[Н] Нет");
-            Console.Write(">> ");
-            Console.ResetColor();
-
-            var input = Console.ReadLine()?.Trim().ToLowerInvariant();
-
-            if (TryHandleServiceCommand(input, out var commandResult))
-            {
-                if (commandResult == ConsoleGameResult.Quit)
-                {
-                    return ConsoleGameResult.Quit;
-                }
-
-                if (commandResult == ConsoleGameResult.StartNewGame)
-                {
-                    Console.Clear();
-                    break;
-                }
-
+            case ConsoleGameResult.Quit:
+                return ConsoleGameResult.Quit;
+            case ConsoleGameResult.StartNewGame:
+                Console.Clear();
                 continue;
-            }
-
-            if (input?.StartsWith('\\') == true)
-            {
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine("Неизвестная команда. Введите \\h, чтобы посмотреть список команд");
-                Console.ResetColor();
-                continue;
-            }
-
-            switch (input)
-            {
-                case "д":
-                    Console.Clear();
-                    break;
-
-                case "н":
-                    return ConsoleGameResult.Finished;
-
-                default:
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine("Введите \"Д\" или \"Н\"");
-                    Console.ResetColor();
-                    continue;
-            }
-
-            break;
         }
+
+        if (isShowHistory == true)
+        {
+            ShowUserAnswerHistory(session);
+            continue;
+        }
+
+        var (isPlayingAgain, playingCommand) = AskYesNo("Хотите сыграть ещё раз?");
+        switch (playingCommand)
+        {
+            case ConsoleGameResult.Quit:
+                return ConsoleGameResult.Quit;
+            case ConsoleGameResult.StartNewGame:
+                Console.Clear();
+                continue;
+        }
+
+        if (isPlayingAgain == true)
+        {
+            Console.Clear();
+            continue;
+        }
+
+        return ConsoleGameResult.Finished;
     }
 }
 
@@ -305,5 +281,80 @@ static bool TryHandleServiceCommand(string? input, out ConsoleGameResult? result
 
         default:
             return false;
+    }
+}
+
+static (bool? Answer, ConsoleGameResult? Command) AskYesNo(string question)
+{
+    while (true)
+    {
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Blue;
+        Console.WriteLine(question);
+        Console.WriteLine("[Д] Да");
+        Console.WriteLine("[Н] Нет");
+        Console.Write(">> ");
+        Console.ResetColor();
+
+        var input = Console.ReadLine()?.Trim().ToLowerInvariant();
+
+        if (TryHandleServiceCommand(input, out var command))
+        {
+            if (command != null)
+            {
+                return (null, command);
+            }
+
+            continue;
+        }
+
+        if (input?.StartsWith('\\') == true)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine("Неизвестная команда. Введите \\h, чтобы посмотреть список команд");
+            Console.ResetColor();
+            continue;
+        }
+
+        switch (input)
+        {
+            case "д":
+                return (true, null);
+
+            case "н":
+                return (false, null);
+
+            default:
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("Введите \"Д\" или \"Н\"");
+                Console.ResetColor();
+                break;
+        }
+    }
+}
+
+static void ShowUserAnswerHistory(GameSession session)
+{
+    var userAnswerHistory = session.UserAnswerHistory;
+
+    if (userAnswerHistory.Count != 0)
+
+    {
+        Console.ForegroundColor = ConsoleColor.Blue;
+        Console.WriteLine("История ответов:");
+        Console.ResetColor();
+
+        foreach (var userAnswer in userAnswerHistory)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine($"- {userAnswer}");
+            Console.ResetColor();
+        }
+    }
+    else
+    {
+        Console.ForegroundColor = ConsoleColor.Blue;
+        Console.WriteLine("История ответов пуста!");
+        Console.ResetColor();
     }
 }
