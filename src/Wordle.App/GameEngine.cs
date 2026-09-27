@@ -8,7 +8,7 @@ public class GameEngine
     {
         _dictionary = dictionary;
     }
-    
+
     public GuessResult ApplyGuess(GameSession session, string? guess)
     {
         guess = guess?.ToLower();
