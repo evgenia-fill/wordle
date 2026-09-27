@@ -56,95 +56,94 @@ public static class WordleApplication
                     break;
             }
         }
+    }
 
-
-        static ConsoleGameResult StartGame()
+    private static ConsoleGameResult StartGame()
+    {
+        while (true)
         {
-            while (true)
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("Выберите режим игры:");
+            Console.WriteLine("[1] Обычная игра (seed выбирается автоматически)");
+            Console.WriteLine("[2] Игра с заданным seed (seed задаёте Вы)");
+            Console.ResetColor();
+
+            var (seed, seedCommand) = ReadSeed();
+
+            switch (seedCommand)
             {
-                Console.WriteLine();
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine("Выберите режим игры:");
-                Console.WriteLine("[1] Обычная игра (seed выбирается автоматически)");
-                Console.WriteLine("[2] Игра с заданным seed (seed задаёте Вы)");
-                Console.ResetColor();
-
-                var (seed, seedCommand) = ReadSeed();
-
-                switch (seedCommand)
-                {
-                    case ConsoleGameResult.Quit:
-                        return ConsoleGameResult.Quit;
-                    case ConsoleGameResult.StartNewGame:
-                        Console.Clear();
-                        continue;
-                }
-
-                var (maxAttempts, attemptsCommand) = ReadMaxAttempts();
-
-                switch (attemptsCommand)
-                {
-                    case ConsoleGameResult.Quit:
-                        return ConsoleGameResult.Quit;
-                    case ConsoleGameResult.StartNewGame:
-                        Console.Clear();
-                        continue;
-                }
-
-                const string fileName = "dictionary.txt";
-
-                var dictionary = WordleDictionary.LoadFromFile(fileName);
-                var correctWord = WordSelector.Choose(seed!.Value, dictionary);
-                var engine = new GameEngine(dictionary);
-
-                var session = new GameSession(maxAttempts!.Value, correctWord);
-                var consoleGame = new ConsoleGame(engine);
-
-                var consoleGameResult = consoleGame.Play(session);
-
-                switch (consoleGameResult)
-                {
-                    case ConsoleGameResult.StartNewGame:
-                        Console.Clear();
-                        continue;
-
-                    case ConsoleGameResult.Quit:
-                        return ConsoleGameResult.Quit;
-                }
-
-                var (isShowHistory, historyCommand) = AskYesNo("Хотите посмотреть свои попытки?");
-                switch (historyCommand)
-                {
-                    case ConsoleGameResult.Quit:
-                        return ConsoleGameResult.Quit;
-                    case ConsoleGameResult.StartNewGame:
-                        Console.Clear();
-                        continue;
-                }
-
-                if (isShowHistory == true)
-                {
-                    ShowUserAnswerHistory(session);
-                }
-
-                var (isPlayingAgain, playingCommand) = AskYesNo("Хотите сыграть ещё раз?");
-                switch (playingCommand)
-                {
-                    case ConsoleGameResult.Quit:
-                        return ConsoleGameResult.Quit;
-                    case ConsoleGameResult.StartNewGame:
-                        Console.Clear();
-                        continue;
-                }
-
-                if (isPlayingAgain == true)
-                {
+                case ConsoleGameResult.Quit:
+                    return ConsoleGameResult.Quit;
+                case ConsoleGameResult.StartNewGame:
                     Console.Clear();
                     continue;
-                }
-
-                return ConsoleGameResult.Quit;
             }
+
+            var (maxAttempts, attemptsCommand) = ReadMaxAttempts();
+
+            switch (attemptsCommand)
+            {
+                case ConsoleGameResult.Quit:
+                    return ConsoleGameResult.Quit;
+                case ConsoleGameResult.StartNewGame:
+                    Console.Clear();
+                    continue;
+            }
+
+            const string fileName = "dictionary.txt";
+
+            var dictionary = WordleDictionary.LoadFromFile(fileName);
+            var correctWord = WordSelector.Choose(seed!.Value, dictionary);
+            var engine = new GameEngine(dictionary);
+
+            var session = new GameSession(maxAttempts!.Value, correctWord);
+            var consoleGame = new ConsoleGame(engine);
+
+            var consoleGameResult = consoleGame.Play(session);
+
+            switch (consoleGameResult)
+            {
+                case ConsoleGameResult.StartNewGame:
+                    Console.Clear();
+                    continue;
+
+                case ConsoleGameResult.Quit:
+                    return ConsoleGameResult.Quit;
+            }
+
+            var (isShowHistory, historyCommand) = AskYesNo("Хотите посмотреть свои попытки?");
+            switch (historyCommand)
+            {
+                case ConsoleGameResult.Quit:
+                    return ConsoleGameResult.Quit;
+                case ConsoleGameResult.StartNewGame:
+                    Console.Clear();
+                    continue;
+            }
+
+            if (isShowHistory == true)
+            {
+                ShowUserAnswerHistory(session);
+            }
+
+            var (isPlayingAgain, playingCommand) = AskYesNo("Хотите сыграть ещё раз?");
+            switch (playingCommand)
+            {
+                case ConsoleGameResult.Quit:
+                    return ConsoleGameResult.Quit;
+                case ConsoleGameResult.StartNewGame:
+                    Console.Clear();
+                    continue;
+            }
+
+            if (isPlayingAgain == true)
+            {
+                Console.Clear();
+                continue;
+            }
+
+            return ConsoleGameResult.Quit;
         }
     }
 
