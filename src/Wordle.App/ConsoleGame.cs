@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Wordle.App;
 
 public class ConsoleGame
@@ -13,7 +15,9 @@ public class ConsoleGame
     {
         while (session.Status == GameStatus.InProgress)
         {
+            Console.ForegroundColor = ConsoleColor.Blue;
             Console.Write("Ваша попытка: ");
+            Console.ResetColor();
             var guess = Console.ReadLine()?.Trim().ToLowerInvariant();
 
             switch (guess)
@@ -40,23 +44,34 @@ public class ConsoleGame
             switch (guessResult.Type)
             {
                 case GuessResultType.LengthError:
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine($"Слово \"{guess}\" должно быть длиной {GameRules.RequiredWordLength}!");
+                    Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine($"Осталось попыток: {session.MaxAttempts - session.UsedAttempts}");
+                    Console.ResetColor();
                     break;
 
                 case GuessResultType.LetterError:
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine($"Слово \"{guess}\" должно состоять только из букв!");
+                    Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine($"Осталось попыток: {session.MaxAttempts - session.UsedAttempts}");
+                    Console.ResetColor();
                     break;
 
                 case GuessResultType.NotInDictionaryError:
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine($"Слова \"{guess}\" нет в словаре!");
+                    Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine($"Осталось попыток: {session.MaxAttempts - session.UsedAttempts}");
+                    Console.ResetColor();
                     break;
 
                 case GuessResultType.Valid:
                     ShowResult(guessResult.LetterStatuses);
+                    Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine($"Осталось попыток: {session.MaxAttempts - session.UsedAttempts}");
+                    Console.ResetColor();
                     break;
             }
 
@@ -65,11 +80,16 @@ public class ConsoleGame
             switch (session.Status)
             {
                 case GameStatus.Win:
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("Поздравляю! Вы выиграли!");
+                    Console.ResetColor();
                     return ConsoleGameResult.Finished;
                 case GameStatus.Lose:
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Поражение!");
+                    Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine($"Загаданное слово: {session.CorrectAnswer}");
+                    Console.ResetColor();
                     return ConsoleGameResult.Finished;
             }
         }
@@ -79,6 +99,7 @@ public class ConsoleGame
 
     public static void ShowCommands()
     {
+        Console.ForegroundColor = ConsoleColor.Blue;
         Console.WriteLine("""
                           Доступные команды:
 
@@ -87,31 +108,38 @@ public class ConsoleGame
                           \s — начать новую игру
                           \q — выйти
                           """);
+        Console.ResetColor();
     }
 
     public static void ShowRules()
     {
-        Console.WriteLine("""
-                          Правила игры
+        Console.ForegroundColor = ConsoleColor.Blue;
+        Console.WriteLine(new StringBuilder()
+            .Append("""
+                    Правила игры
 
-                          Программа выбирает слово из словаря, а Вы пытаетесь его угадать
-                          за ограниченное количество попыток.
+                    Программа выбирает слово из словаря, а Вы пытаетесь его угадать
+                    за ограниченное количество попыток.
 
-                          После каждой валидной попытки Вы получаете подсказку по каждой букве:
+                    После каждой валидной попытки Вы получаете подсказку по каждой букве:
 
-                          ✅ — буква стоит на правильном месте;
-                          🟡 — буква есть в загаданном слове, но стоит на другом месте;
-                          ❌ — такой буквы среди оставшихся букв загаданного слова нет.
+                    ✅ — буква стоит на правильном месте;
+                    🟡 — буква есть в загаданном слове, но стоит на другом месте;
+                    ❌ — такой буквы среди оставшихся букв загаданного слова нет.
 
-                          Пример:
+                    Пример:
 
-                          Загадано: озеро
-                          Ввод:     арбуз
+                    Загадано: озеро
+                    Ввод:     арбуз
 
-                          Результат: ❌🟡❌❌🟡
+                    Результат: ❌🟡❌❌🟡
+                    """)
+            .ToString());
 
-                          Важно! Игра нечувствительна к регистрам, но чувствительна к букве "ё".
-                          """);
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(" Важно! Игра нечувствительна к регистрам, но чувствительна к букве \"ё\".");
+
+        Console.ResetColor();
     }
 
     private static void ShowResult(IReadOnlyList<LetterStatus>? statuses)

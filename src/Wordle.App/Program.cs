@@ -1,6 +1,8 @@
 ﻿using Wordle.App;
 
+Console.ForegroundColor = ConsoleColor.DarkBlue;
 Console.WriteLine("Добро пожаловать в Wordle!");
+Console.ResetColor();
 Thread.Sleep(1000);
 
 ConsoleGame.ShowCommands();
@@ -8,7 +10,9 @@ ConsoleGame.ShowCommands();
 while (true)
 {
     Console.WriteLine();
+    Console.ForegroundColor = ConsoleColor.Blue;
     Console.Write("Введите команду >> ");
+    Console.ResetColor();
 
     var command = Console.ReadLine()?.Trim().ToLowerInvariant();
 
@@ -23,7 +27,9 @@ while (true)
             break;
 
         case "\\q":
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
             Console.WriteLine("До встречи!");
+            Console.ResetColor();
             return;
 
         case "\\s":
@@ -31,14 +37,18 @@ while (true)
 
             if (result == ConsoleGameResult.Quit)
             {
+                Console.ForegroundColor = ConsoleColor.DarkBlue;
                 Console.WriteLine("До встречи!");
+                Console.ResetColor();
                 return;
             }
 
             break;
 
         default:
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine("Неизвестная команда. Введите \\h, чтобы посмотреть список команд");
+            Console.ResetColor();
             break;
     }
 }
@@ -49,9 +59,11 @@ static ConsoleGameResult StartGame()
     while (true)
     {
         Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Blue;
         Console.WriteLine("Выберите режим игры:");
         Console.WriteLine("[1] Обычная игра (seed выбирается автоматически)");
         Console.WriteLine("[2] Игра с заданным seed (seed задаёте Вы)");
+        Console.ResetColor();
 
         var (seed, seedCommand) = ReadSeed();
 
@@ -102,14 +114,16 @@ static ConsoleGameResult StartGame()
         while (true)
         {
             Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Хотите сыграть ещё раз?");
             Console.WriteLine("[Д] Да");
             Console.WriteLine("[Н] Нет");
             Console.Write(">> ");
+            Console.ResetColor();
 
-            var inputKey = Console.ReadLine()?.Trim().ToLowerInvariant();
+            var input = Console.ReadLine()?.Trim().ToLowerInvariant();
 
-            if (TryHandleServiceCommand(inputKey, out var commandResult))
+            if (TryHandleServiceCommand(input, out var commandResult))
             {
                 if (commandResult == ConsoleGameResult.Quit)
                 {
@@ -125,7 +139,15 @@ static ConsoleGameResult StartGame()
                 continue;
             }
 
-            switch (inputKey)
+            if (input?.StartsWith('\\') == true)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("Неизвестная команда. Введите \\h, чтобы посмотреть список команд");
+                Console.ResetColor();
+                continue;
+            }
+
+            switch (input)
             {
                 case "д":
                     Console.Clear();
@@ -135,7 +157,9 @@ static ConsoleGameResult StartGame()
                     return ConsoleGameResult.Finished;
 
                 default:
+                    Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine("Введите \"Д\" или \"Н\"");
+                    Console.ResetColor();
                     continue;
             }
 
@@ -149,7 +173,9 @@ static (int? Seed, ConsoleGameResult? Command) ReadSeed()
 {
     while (true)
     {
+        Console.ForegroundColor = ConsoleColor.Blue;
         Console.Write(">> ");
+        Console.ResetColor();
 
         var input = Console.ReadLine()?.Trim().ToLowerInvariant();
 
@@ -171,7 +197,9 @@ static (int? Seed, ConsoleGameResult? Command) ReadSeed()
             case "2":
                 while (true)
                 {
+                    Console.ForegroundColor = ConsoleColor.Blue;
                     Console.Write("Введите seed, по которому выбирается слово из словаря >> ");
+                    Console.ResetColor();
 
                     var seedInput = Console.ReadLine()?.Trim().ToLowerInvariant();
 
@@ -185,16 +213,28 @@ static (int? Seed, ConsoleGameResult? Command) ReadSeed()
                         continue;
                     }
 
+                    if (input?.StartsWith('\\') == true)
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.WriteLine("Неизвестная команда. Введите \\h, чтобы посмотреть список команд");
+                        Console.ResetColor();
+                        continue;
+                    }
+
                     if (int.TryParse(seedInput, out var seed))
                     {
                         return (seed, null);
                     }
 
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Seed должен быть целым числом");
+                    Console.ResetColor();
                 }
 
             default:
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Такого режима игры нет!");
+                Console.ResetColor();
                 break;
         }
     }
@@ -205,7 +245,9 @@ static (int? MaxAttempts, ConsoleGameResult? Command) ReadMaxAttempts()
 {
     while (true)
     {
+        Console.ForegroundColor = ConsoleColor.Blue;
         Console.Write("Введите максимальное количество попыток >> ");
+        Console.ResetColor();
 
         var input = Console.ReadLine()?.Trim().ToLowerInvariant();
 
@@ -219,19 +261,27 @@ static (int? MaxAttempts, ConsoleGameResult? Command) ReadMaxAttempts()
             continue;
         }
 
+        if (input?.StartsWith('\\') == true)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine("Неизвестная команда. Введите \\h, чтобы посмотреть список команд");
+            Console.ResetColor();
+            continue;
+        }
+
         if (int.TryParse(input, out var maxAttempts) && maxAttempts > 0)
         {
             return (maxAttempts, null);
         }
 
+        Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine("Количество попыток должно быть целым числом больше 0");
+        Console.ResetColor();
     }
 }
 
 
-static bool TryHandleServiceCommand(
-    string? input,
-    out ConsoleGameResult? result)
+static bool TryHandleServiceCommand(string? input, out ConsoleGameResult? result)
 {
     result = null;
 
