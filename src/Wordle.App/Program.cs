@@ -121,7 +121,6 @@ static ConsoleGameResult StartGame()
         if (isShowHistory == true)
         {
             ShowUserAnswerHistory(session);
-            continue;
         }
 
         var (isPlayingAgain, playingCommand) = AskYesNo("Хотите сыграть ещё раз?");
@@ -140,7 +139,7 @@ static ConsoleGameResult StartGame()
             continue;
         }
 
-        return ConsoleGameResult.Finished;
+        return ConsoleGameResult.Quit;
     }
 }
 
@@ -189,7 +188,7 @@ static (int? Seed, ConsoleGameResult? Command) ReadSeed()
                         continue;
                     }
 
-                    if (input?.StartsWith('\\') == true)
+                    if (seedInput?.StartsWith('\\') == true)
                     {
                         Console.ForegroundColor = ConsoleColor.DarkYellow;
                         Console.WriteLine("Неизвестная команда. Введите \\h, чтобы посмотреть список команд");
