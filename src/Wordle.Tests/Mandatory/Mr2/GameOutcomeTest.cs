@@ -41,6 +41,8 @@ public class GameOutcomeTest
         var session = new GameSession(maxAttempts, correctWord);
         var consoleGame = new ConsoleGame(engine);
 
+        var statistics = new SessionStatistics();
+
         var input = new StringReader(
             "сашка\n" +
             "машка\n" +
@@ -56,7 +58,7 @@ public class GameOutcomeTest
             Console.SetIn(input);
             Console.SetOut(output);
 
-            consoleGame.Play(session);
+            consoleGame.Play(session, statistics);
 
             Assert.Equal(GameStatus.Lose, session.Status);
             Assert.Contains($"Загаданное слово: {correctWord}", output.ToString());

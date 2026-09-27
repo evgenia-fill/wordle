@@ -4,6 +4,8 @@ public static class WordleApplication
 {
     public static void Run()
     {
+        var statistics = new SessionStatistics();
+
         Console.ForegroundColor = ConsoleColor.DarkBlue;
         Console.WriteLine("Добро пожаловать в Wordle!");
         Console.ResetColor();
@@ -37,7 +39,7 @@ public static class WordleApplication
                     return;
 
                 case "\\s":
-                    var result = StartGame();
+                    var result = StartGame(statistics);
 
                     if (result == ConsoleGameResult.Quit)
                     {
@@ -49,6 +51,11 @@ public static class WordleApplication
 
                     break;
 
+                case "\\stat":
+                    ConsoleGame.ShowStatistics(statistics);
+                    Console.WriteLine();
+                    break;
+
                 default:
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
                     Console.WriteLine("Неизвестная команда. Введите \\h, чтобы посмотреть список команд");
@@ -58,7 +65,7 @@ public static class WordleApplication
         }
     }
 
-    private static ConsoleGameResult StartGame()
+    private static ConsoleGameResult StartGame(SessionStatistics statistics)
     {
         while (true)
         {
@@ -69,7 +76,7 @@ public static class WordleApplication
             Console.WriteLine("[2] Игра с заданным seed (seed задаёте Вы)");
             Console.ResetColor();
 
-            var (seed, seedCommand) = ReadSeed();
+            var (seed, seedCommand) = ReadSeed(statistics);
 
             switch (seedCommand)
             {
@@ -80,7 +87,7 @@ public static class WordleApplication
                     continue;
             }
 
-            var (maxAttempts, attemptsCommand) = ReadMaxAttempts();
+            var (maxAttempts, attemptsCommand) = ReadMaxAttempts(statistics);
 
             switch (attemptsCommand)
             {
@@ -100,7 +107,7 @@ public static class WordleApplication
             var session = new GameSession(maxAttempts!.Value, correctWord);
             var consoleGame = new ConsoleGame(engine);
 
-            var consoleGameResult = consoleGame.Play(session);
+            var consoleGameResult = consoleGame.Play(session, statistics);
 
             switch (consoleGameResult)
             {
@@ -110,9 +117,13 @@ public static class WordleApplication
 
                 case ConsoleGameResult.Quit:
                     return ConsoleGameResult.Quit;
+
+                case ConsoleGameResult.Finished:
+                    statistics.AddGame(session);
+                    break;
             }
 
-            var (isShowHistory, historyCommand) = AskYesNo("Хотите посмотреть свои попытки?");
+            var (isShowHistory, historyCommand) = AskYesNo("Хотите посмотреть свои попытки?", statistics);
             switch (historyCommand)
             {
                 case ConsoleGameResult.Quit:
@@ -127,7 +138,7 @@ public static class WordleApplication
                 ShowUserAnswerHistory(session);
             }
 
-            var (isPlayingAgain, playingCommand) = AskYesNo("Хотите сыграть ещё раз?");
+            var (isPlayingAgain, playingCommand) = AskYesNo("Хотите сыграть ещё раз?", statistics);
             switch (playingCommand)
             {
                 case ConsoleGameResult.Quit:
@@ -147,7 +158,7 @@ public static class WordleApplication
         }
     }
 
-    private static (int? Seed, ConsoleGameResult? Command) ReadSeed()
+    private static (int? Seed, ConsoleGameResult? Command) ReadSeed(SessionStatistics statistics)
     {
         while (true)
         {
@@ -157,7 +168,7 @@ public static class WordleApplication
 
             var input = Console.ReadLine()?.Trim().ToLowerInvariant();
 
-            if (TryHandleServiceCommand(input, out var command))
+            if (TryHandleServiceCommand(input, statistics, out var command))
             {
                 if (command != null)
                 {
@@ -181,7 +192,7 @@ public static class WordleApplication
 
                         var seedInput = Console.ReadLine()?.Trim().ToLowerInvariant();
 
-                        if (TryHandleServiceCommand(seedInput, out command))
+                        if (TryHandleServiceCommand(seedInput, statistics, out command))
                         {
                             if (command != null)
                             {
@@ -219,7 +230,7 @@ public static class WordleApplication
     }
 
 
-    private static (int? MaxAttempts, ConsoleGameResult? Command) ReadMaxAttempts()
+    private static (int? MaxAttempts, ConsoleGameResult? Command) ReadMaxAttempts(SessionStatistics statistics)
     {
         while (true)
         {
@@ -229,7 +240,7 @@ public static class WordleApplication
 
             var input = Console.ReadLine()?.Trim().ToLowerInvariant();
 
-            if (TryHandleServiceCommand(input, out var command))
+            if (TryHandleServiceCommand(input, statistics, out var command))
             {
                 if (command != null)
                 {
@@ -259,7 +270,7 @@ public static class WordleApplication
     }
 
 
-    private static bool TryHandleServiceCommand(string? input, out ConsoleGameResult? result)
+    private static bool TryHandleServiceCommand(string? input, SessionStatistics statistics, out ConsoleGameResult? result)
     {
         result = null;
 
@@ -271,6 +282,10 @@ public static class WordleApplication
 
             case "\\r":
                 ConsoleGame.ShowRules();
+                return true;
+
+            case "\\stat":
+                ConsoleGame.ShowStatistics(statistics);
                 return true;
 
             case "\\q":
@@ -286,7 +301,7 @@ public static class WordleApplication
         }
     }
 
-    private static (bool? Answer, ConsoleGameResult? Command) AskYesNo(string question)
+    private static (bool? Answer, ConsoleGameResult? Command) AskYesNo(string question, SessionStatistics statistics)
     {
         while (true)
         {
@@ -300,7 +315,7 @@ public static class WordleApplication
 
             var input = Console.ReadLine()?.Trim().ToLowerInvariant();
 
-            if (TryHandleServiceCommand(input, out var command))
+            if (TryHandleServiceCommand(input, statistics, out var command))
             {
                 if (command != null)
                 {

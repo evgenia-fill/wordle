@@ -11,7 +11,7 @@ public class ConsoleGame
         _engine = engine;
     }
 
-    public ConsoleGameResult Play(GameSession session)
+    public ConsoleGameResult Play(GameSession session, SessionStatistics statistics)
     {
         while (session.Status == GameStatus.InProgress)
         {
@@ -106,6 +106,7 @@ public class ConsoleGame
 
                           \h — посмотреть список команд
                           \r — посмотреть правила игры
+                          \stat — посмотреть статистику
                           \s — начать новую игру
                           \q — выйти
                           """);
@@ -139,6 +140,23 @@ public class ConsoleGame
 
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine("Важно! Игра нечувствительна к регистрам, но чувствительна к букве \"ё\".");
+
+        Console.ResetColor();
+    }
+
+    public static void ShowStatistics(SessionStatistics statistics)
+    {
+        Console.ForegroundColor = ConsoleColor.Blue;
+
+        Console.WriteLine("""
+                          Статистика сессии:
+                          """);
+
+        Console.WriteLine($"Сыграно игр: {statistics.GamesPlayed}");
+        Console.WriteLine($"Побед: {statistics.Wins}");
+        Console.WriteLine($"Поражений: {statistics.Losses}");
+        Console.WriteLine($"Процент побед: {statistics.WinsPercent:F1}%");
+        Console.WriteLine($"Среднее количество попыток: {statistics.AverageAttempts:F1}");
 
         Console.ResetColor();
     }
