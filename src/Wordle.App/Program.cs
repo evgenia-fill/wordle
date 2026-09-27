@@ -3,7 +3,7 @@
 Console.WriteLine("Добро пожаловать в Wordle!");
 Thread.Sleep(1000);
 
-ShowCommands();
+ConsoleGame.ShowCommands();
 
 while (true)
 {
@@ -15,11 +15,11 @@ while (true)
     switch (command)
     {
         case "\\h":
-            ShowCommands();
+            ConsoleGame.ShowCommands();
             break;
 
         case "\\r":
-            ShowRules();
+            ConsoleGame.ShowRules();
             break;
 
         case "\\q":
@@ -27,7 +27,14 @@ while (true)
             return;
 
         case "\\s":
-            StartGame();
+            var result = StartGame();
+
+            if (result == ConsoleGameResult.Quit)
+            {
+                Console.WriteLine("До встречи!");
+                return;
+            }
+
             break;
 
         default:
@@ -36,7 +43,8 @@ while (true)
     }
 }
 
-static void StartGame()
+
+static ConsoleGameResult StartGame()
 {
     while (true)
     {
@@ -45,60 +53,145 @@ static void StartGame()
         Console.WriteLine("[1] Обычная игра (seed выбирается автоматически)");
         Console.WriteLine("[2] Игра с заданным seed (seed задаёте Вы)");
 
-        var seed = ReadSeed();
-        var maxAttempts = ReadMaxAttempts();
+        var (seed, seedCommand) = ReadSeed();
+
+        switch (seedCommand)
+        {
+            case ConsoleGameResult.Quit:
+                return ConsoleGameResult.Quit;
+            case ConsoleGameResult.StartNewGame:
+                Console.Clear();
+                continue;
+        }
+
+        var (maxAttempts, attemptsCommand) = ReadMaxAttempts();
+
+        switch (attemptsCommand)
+        {
+            case ConsoleGameResult.Quit:
+                return ConsoleGameResult.Quit;
+            case ConsoleGameResult.StartNewGame:
+                Console.Clear();
+                continue;
+        }
 
         const string fileName = "dictionary.txt";
 
         var dictionary = WordleDictionary.LoadFromFile(fileName);
-        var correctWord = WordSelector.Choose(seed, dictionary);
+        var correctWord = WordSelector.Choose(seed!.Value, dictionary);
         var engine = new GameEngine(dictionary);
 
-        var session = new GameSession(maxAttempts, correctWord);
+        var session = new GameSession(maxAttempts!.Value, correctWord);
         var consoleGame = new ConsoleGame(engine);
 
-        consoleGame.Play(session);
+        var consoleGameResult = consoleGame.Play(session);
 
-        Console.WriteLine();
-        Console.WriteLine("Хотите сыграть ещё раз?");
-        Console.WriteLine("[Д] Да");
-        Console.WriteLine("[Н] Нет");
-
-        var restart = Console.ReadKey(intercept: true);
-        Console.WriteLine();
-
-        if (char.ToUpperInvariant(restart.KeyChar) != 'Д')
+        switch (consoleGameResult)
         {
-            Console.Clear();
-            return;
+            case ConsoleGameResult.StartNewGame:
+                Console.Clear();
+                continue;
+
+            case ConsoleGameResult.Quit:
+                return ConsoleGameResult.Quit;
+
+            case ConsoleGameResult.Finished:
+                break;
         }
 
-        Console.Clear();
+        while (true)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Хотите сыграть ещё раз?");
+            Console.WriteLine("[Д] Да");
+            Console.WriteLine("[Н] Нет");
+            Console.Write(">> ");
+
+            var inputKey = Console.ReadLine()?.Trim().ToLowerInvariant();
+
+            if (TryHandleServiceCommand(inputKey, out var commandResult))
+            {
+                if (commandResult == ConsoleGameResult.Quit)
+                {
+                    return ConsoleGameResult.Quit;
+                }
+
+                if (commandResult == ConsoleGameResult.StartNewGame)
+                {
+                    Console.Clear();
+                    break;
+                }
+
+                continue;
+            }
+
+            switch (inputKey)
+            {
+                case "д":
+                    Console.Clear();
+                    break;
+
+                case "н":
+                    return ConsoleGameResult.Finished;
+
+                default:
+                    Console.WriteLine("Введите \"Д\" или \"Н\"");
+                    continue;
+            }
+
+            break;
+        }
     }
 }
 
-static int ReadSeed()
+
+static (int? Seed, ConsoleGameResult? Command) ReadSeed()
 {
     while (true)
     {
-        var key = Console.ReadKey(intercept: true);
-        Console.WriteLine();
+        Console.Write(">> ");
 
-        switch (key.KeyChar)
+        var input = Console.ReadLine()?.Trim().ToLowerInvariant();
+
+        if (TryHandleServiceCommand(input, out var command))
         {
-            case '1':
-                return Random.Shared.Next();
+            if (command != null)
+            {
+                return (null, command);
+            }
 
-            case '2':
-                Console.Write("Введите seed, по которому выбирается слово из словаря >> ");
+            continue;
+        }
 
-                if (int.TryParse(Console.ReadLine(), out var seed))
+        switch (input)
+        {
+            case "1":
+                return (Random.Shared.Next(), null);
+
+            case "2":
+                while (true)
                 {
-                    return seed;
-                }
+                    Console.Write("Введите seed, по которому выбирается слово из словаря >> ");
 
-                Console.WriteLine("Seed должен быть целым числом");
-                break;
+                    var seedInput = Console.ReadLine()?.Trim().ToLowerInvariant();
+
+                    if (TryHandleServiceCommand(seedInput, out command))
+                    {
+                        if (command != null)
+                        {
+                            return (null, command);
+                        }
+
+                        continue;
+                    }
+
+                    if (int.TryParse(seedInput, out var seed))
+                    {
+                        return (seed, null);
+                    }
+
+                    Console.WriteLine("Seed должен быть целым числом");
+                }
 
             default:
                 Console.WriteLine("Такого режима игры нет!");
@@ -107,55 +200,60 @@ static int ReadSeed()
     }
 }
 
-static int ReadMaxAttempts()
+
+static (int? MaxAttempts, ConsoleGameResult? Command) ReadMaxAttempts()
 {
     while (true)
     {
         Console.Write("Введите максимальное количество попыток >> ");
 
-        if (int.TryParse(Console.ReadLine(), out var maxAttempts) &&
-            maxAttempts > 0)
+        var input = Console.ReadLine()?.Trim().ToLowerInvariant();
+
+        if (TryHandleServiceCommand(input, out var command))
         {
-            return maxAttempts;
+            if (command != null)
+            {
+                return (null, command);
+            }
+
+            continue;
+        }
+
+        if (int.TryParse(input, out var maxAttempts) && maxAttempts > 0)
+        {
+            return (maxAttempts, null);
         }
 
         Console.WriteLine("Количество попыток должно быть целым числом больше 0");
     }
 }
 
-static void ShowCommands()
+
+static bool TryHandleServiceCommand(
+    string? input,
+    out ConsoleGameResult? result)
 {
-    Console.WriteLine("""
-                      Доступные команды:
+    result = null;
 
-                      \h — посмотреть список команд
-                      \r — посмотреть правила игры
-                      \s — начать новую игру
-                      \q — выйти
-                      """);
-}
+    switch (input)
+    {
+        case "\\h":
+            ConsoleGame.ShowCommands();
+            return true;
 
-static void ShowRules()
-{
-    Console.WriteLine("""
-                      Правила игры
+        case "\\r":
+            ConsoleGame.ShowRules();
+            return true;
 
-                      Программа выбирает слово из словаря, а Вы пытаетесь его угадать
-                      за ограниченное количество попыток.
+        case "\\q":
+            result = ConsoleGameResult.Quit;
+            return true;
 
-                      После каждой валидной попытки Вы получаете подсказку по каждой букве:
+        case "\\s":
+            result = ConsoleGameResult.StartNewGame;
+            return true;
 
-                      ✅ — буква стоит на правильном месте;
-                      🟡 — буква есть в загаданном слове, но стоит на другом месте;
-                      ❌ — такой буквы среди оставшихся букв загаданного слова нет.
-
-                      Пример:
-
-                      Загадано: озеро
-                      Ввод:     арбуз
-
-                      Результат: ❌🟡❌❌🟡
-                      
-                      Важно! Игра нечувствительна к регистрам, но чувствительна к букве "ё".
-                      """);
+        default:
+            return false;
+    }
 }
