@@ -69,6 +69,7 @@ public class ConsoleGame
 
                 case GuessResultType.Valid:
                     ShowResult(guessResult.LetterStatuses);
+                    Console.WriteLine();
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine($"Осталось попыток: {session.MaxAttempts - session.UsedAttempts}");
                     Console.ResetColor();
@@ -137,7 +138,7 @@ public class ConsoleGame
             .ToString());
 
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine(" Важно! Игра нечувствительна к регистрам, но чувствительна к букве \"ё\".");
+        Console.WriteLine("Важно! Игра нечувствительна к регистрам, но чувствительна к букве \"ё\".");
 
         Console.ResetColor();
     }
