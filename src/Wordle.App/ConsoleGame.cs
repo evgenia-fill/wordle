@@ -37,6 +37,19 @@ public class ConsoleGame
 
                 case "\\s":
                     return ConsoleGameResult.StartNewGame;
+                
+                case "\\stat":
+                    ShowStatistics(statistics);
+                    Console.WriteLine();
+                    break;
+            }
+            
+            if (guess?.StartsWith('\\') == true)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("Неизвестная команда. Введите \\h, чтобы посмотреть список команд");
+                Console.ResetColor();
+                continue;
             }
 
             var guessResult = _engine.ApplyGuess(session, guess);
