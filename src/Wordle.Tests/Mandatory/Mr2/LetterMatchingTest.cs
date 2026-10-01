@@ -11,7 +11,7 @@ public class LetterMatchingTest
         const string correctAnswer = "озеро";
         const string guess = "арбуз";
         var expectedAnswer = new[] { LetterStatus.NotContained, LetterStatus.OnWrongPlace, LetterStatus.NotContained, LetterStatus.NotContained, LetterStatus.OnWrongPlace };
-        Assert.Equal(expectedAnswer, GuessChecker.Evaluate(guess, correctAnswer));
+        Assert.Equal(expectedAnswer, GuessChecker.Check(guess, correctAnswer));
     }
 
     [Fact(DisplayName = "Полное совпадение: загадано \"озеро\", ввод \"озеро\" -> ✅✅✅✅✅")]
@@ -20,7 +20,7 @@ public class LetterMatchingTest
         const string correctAnswer = "озеро";
         const string guess = "озеро";
         var expectedAnswer = new[] { LetterStatus.OnCorrectPlace, LetterStatus.OnCorrectPlace, LetterStatus.OnCorrectPlace, LetterStatus.OnCorrectPlace, LetterStatus.OnCorrectPlace };
-        Assert.Equal(expectedAnswer, GuessChecker.Evaluate(guess, correctAnswer));
+        Assert.Equal(expectedAnswer, GuessChecker.Check(guess, correctAnswer));
     }
 
     [Fact(DisplayName = "Повторяющиеся буквы: загадано \"сорок\", ввод \"оооом\" -> ❌✅❌✅❌")]
@@ -29,7 +29,7 @@ public class LetterMatchingTest
         const string correctAnswer = "сорок";
         const string guess = "оооом";
         var expectedAnswer = new[] { LetterStatus.NotContained, LetterStatus.OnCorrectPlace, LetterStatus.NotContained, LetterStatus.OnCorrectPlace, LetterStatus.NotContained };
-        Assert.Equal(expectedAnswer, GuessChecker.Evaluate(guess, correctAnswer));
+        Assert.Equal(expectedAnswer, GuessChecker.Check(guess, correctAnswer));
     }
 
     [Fact(DisplayName = "Ни одна буква не подошла: все позиции ❌")]
@@ -37,7 +37,7 @@ public class LetterMatchingTest
     {
         const string correctAnswer = "сорок";
         const string guess = "ййййй";
-        var expectedAnswer = new[] { LetterStatus.NotContained, LetterStatus.OnCorrectPlace, LetterStatus.NotContained, LetterStatus.OnCorrectPlace, LetterStatus.NotContained };
-        Assert.Equal(expectedAnswer, GuessChecker.Evaluate(guess, correctAnswer));
+        var expectedAnswer = new[] { LetterStatus.NotContained, LetterStatus.NotContained, LetterStatus.NotContained, LetterStatus.NotContained, LetterStatus.NotContained };
+        Assert.Equal(expectedAnswer, GuessChecker.Check(guess, correctAnswer));
     }
 }

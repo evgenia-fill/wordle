@@ -34,7 +34,7 @@ public class GameEngine
         }
 
         session.ApplyValidGuess(guess);
-        var statuses = GuessChecker.Evaluate(guess, session.CorrectAnswer);
+        var statuses = GuessChecker.Check(guess, session.CorrectAnswer);
 
         return new GuessResult(GuessResultType.Valid, statuses);
     }
