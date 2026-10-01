@@ -4,10 +4,10 @@ public class GameSession
 {
     public readonly int MaxAttempts;
     public readonly string CorrectAnswer;
-    public int UsedAttempts { get; private set; }
     public GameStatus Status { get; private set; }
     public IReadOnlyList<string> UserAnswerHistory => _userAnswerHistory;
     private readonly List<string> _userAnswerHistory = new();
+    public int UsedAttempts => _userAnswerHistory.Count;
 
     public GameSession(int maxAttempts, string correctAnswer)
     {
@@ -28,13 +28,11 @@ public class GameSession
 
         MaxAttempts = maxAttempts;
         Status = GameStatus.InProgress;
-        UsedAttempts = 0;
         CorrectAnswer = correctAnswer;
     }
 
     public void ApplyValidGuess(string guess)
     {
-        UsedAttempts++;
         _userAnswerHistory.Add(guess);
 
         if (guess == CorrectAnswer)
